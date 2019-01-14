@@ -8,10 +8,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PWMVictorSPX;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.cameraserver.CameraServer;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -22,9 +24,11 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  */
 public class Robot extends TimedRobot {
   private final DifferentialDrive m_robotDrive
-      = new DifferentialDrive(new PWMVictorSPX(0), new PWMVictorSPX(1));
+      = new DifferentialDrive(new Spark(0), new Spark(1));
   private final Joystick m_stick = new Joystick(0);
   private final Timer m_timer = new Timer();
+  
+  
 
   /**
    * This function is run when the robot is first started up and should be
@@ -49,11 +53,11 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     // Drive for 2 seconds
-    if (m_timer.get() < 2.0) {
-      m_robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
-    } else {
-      m_robotDrive.stopMotor(); // stop robot
-    }
+    // if (m_timer.get() < 2.0) {
+    //   m_robotDrive.arcadeDrive(0.5, 0.0); // drive forwards half speed
+    // } else {
+    //   m_robotDrive.stopMotor(); // stop robot
+    // }
   }
 
   /**
@@ -68,7 +72,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    m_robotDrive.arcadeDrive(m_stick.getY(), m_stick.getX());
+    m_robotDrive.arcadeDrive(- m_stick.getY(), m_stick.getX());
+    //System.out.println("This is a test");
   }
 
   /**
