@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.cscore.MjpegServer;
 import edu.wpi.first.cameraserver.CameraServer;
 
 
@@ -27,8 +28,7 @@ public class Robot extends TimedRobot {
       = new DifferentialDrive(new Spark(0), new Spark(1));
   private final Joystick m_stick = new Joystick(0);
   private final Timer m_timer = new Timer();
-  
-  
+    
 
   /**
    * This function is run when the robot is first started up and should be
@@ -36,6 +36,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    CameraServer.getInstance().startAutomaticCapture();
   }
 
   /**
