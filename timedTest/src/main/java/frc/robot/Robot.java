@@ -7,11 +7,19 @@
 
 package frc.robot;
 
-import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.shuffleboard.*;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -25,6 +33,16 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  private final Spark leftMotor = new Spark(1);
+  private final Spark rightMotor = new Spark(0);
+  private final DifferentialDrive m_robotDrive
+      = new DifferentialDrive(rightMotor, leftMotor);
+  private final Joystick m_stick = new Joystick(0);
+  private final Timer m_timer = new Timer();
+  private final Compressor mainCompressor = new Compressor(0);
+  private final DoubleSolenoid test1 = new DoubleSolenoid(0, 1);
+  private final JoystickButton solIn = new JoystickButton(m_stick, 7);
+  private final JoystickButton solOut = new JoystickButton(m_stick, 8);
 
   /**
    * This function is run when the robot is first started up and should be
@@ -35,8 +53,8 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    UsbCamera frontCam = new UsbCamera("Front Camera", 0);
-    CameraServer.getInstance().addCamera(frontCam);
+    //CameraServer.getInstance().startAutomaticCapture("Front Camera", "/dev/video0");
+    //CameraServer.getInstance().startAutomaticCapture("Rear Camera", "/dev/video1");
   }
 
   /**
@@ -64,6 +82,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    m_timer.reset();
+    m_timer.start();
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
@@ -80,7 +100,7 @@ public class Robot extends TimedRobot {
         break;
       case kDefaultAuto:
       default:
-        // Put default auto code here
+      m_robotDrive.arcadeDrive(0, 0.50);
         break;
     }
   }
@@ -90,6 +110,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    m_robotDrive.arcadeDrive(-m_stick.getY(), m_stick.getZ());
+    //System.out.println(m_robotDrive.getDescription());
+    if (solIn.get()) test1.set(Value.kReverse);
+    if (solOut.get()) test1.set(Value.kForward);
   }
 
   /**
