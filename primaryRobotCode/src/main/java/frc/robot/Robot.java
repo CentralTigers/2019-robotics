@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import edu.wpi.first.wpilibj.buttons.NetworkButton;
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.shuffleboard.*;
 import edu.wpi.first.wpilibj.Joystick;
@@ -35,28 +34,39 @@ import edu.wpi.first.wpilibj.DigitalInput;
  * project.
  */
 public class Robot extends TimedRobot {
-  private final NetworkTableInstance netInst = NetworkTableInstance.getDefault();
-  private static final String kDefaultAuto = "Default";
+  private static final String kDefaultAuto = "Manual Mode";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  private final Spark arms = new Spark(0);
-  private final Spark rightBack = new Spark(1);
-  private final Spark rightFront = new Spark(2);
-  private final Spark leftFront = new Spark(3);
-  private final Spark leftBack = new Spark(4);
-  private final Spark elevator = new Spark(5);
-  private final SpeedControllerGroup leftMotors = new SpeedControllerGroup(leftBack, leftFront);
-  private final SpeedControllerGroup rightMotors = new SpeedControllerGroup(rightBack, rightFront);
+  // Initialize motor controllers
+  private final Spark armsMotor = new Spark(0);
+  private final Spark rightBackMotor = new Spark(1);
+  private final Spark rightFrontMotor = new Spark(2);
+  private final Spark leftFrontMotor = new Spark(3);
+  private final Spark leftBackMotor = new Spark(4);
+  private final Spark elevatorMotor = new Spark(5);
+  // Create speed controller groups for DifferentialDrive object
+  private final SpeedControllerGroup leftMotors = new SpeedControllerGroup(leftBackMotor, leftFrontMotor);
+  private final SpeedControllerGroup rightMotors = new SpeedControllerGroup(rightBackMotor, rightFrontMotor);
   private final DifferentialDrive m_robotDrive
       = new DifferentialDrive(rightMotors, leftMotors);
+  // Initialize joystick
   private final Joystick m_stick = new Joystick(0);
+  // Initialize timer
   private final Timer m_timer = new Timer();
+  // Initialize pneumatic components
   private final Compressor mainCompressor = new Compressor(0);
-  private final DoubleSolenoid clawEject = new DoubleSolenoid(0, 1);
-  private final DoubleSolenoid discGrabber = new DoubleSolenoid(2, 3);
-  private final NetworkButton pcmResetButton = new NetworkButton(, "PCM Sticky Fault Reset");
-  //private final JoystickButton solIn = new JoystickButton(m_stick, 5);
-  //private final JoystickButton solOut = new JoystickButton(m_stick, 6);
+  private final DoubleSolenoid clawPiston = new DoubleSolenoid(0, 1);
+  private final DoubleSolenoid discPiston = new DoubleSolenoid(2, 3); 
+  // Initialize joystick buttons
+  private final JoystickButton elevatorUpButton = new JoystickButton(m_stick, 6);
+  private final JoystickButton elevatorDownButton = new JoystickButton(m_stick, 4);
+  private final JoystickButton armsEjectButton = new JoystickButton(m_stick, 1);
+  private final JoystickButton armsPullButton = new JoystickButton(m_stick, 2);
+  private final JoystickButton clawRetractButton = new JoystickButton(m_stick, 11);
+  private final JoystickButton clawExtendButton = new JoystickButton(m_stick, 12);
+  private final JoystickButton discGrabberRetractButton = new JoystickButton(m_stick, 9);
+  private final JoystickButton discGrabberExtendButton = new JoystickButton(m_stick, 10);
+  // Initialize pressure sensor
   private final AnalogInput pressureSensor = new AnalogInput(0);
   //private final DigitalInput testSwitch = new DigitalInput(0);
 
@@ -68,6 +78,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    SmartDashboard.putBoolean("PCM Sticky Fault Reset", false);
   }
 
   /**
@@ -89,6 +100,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("PCM Compressor Over Current [Sticky]", mainCompressor.getCompressorCurrentTooHighStickyFault());
     SmartDashboard.putBoolean("PCM Compressor Not Connected [Sticky]", mainCompressor.getCompressorNotConnectedStickyFault());
     SmartDashboard.putBoolean("PCM Compressor Shorted [Sticky]", mainCompressor.getCompressorShortedStickyFault());
+    if (SmartDashboard.getBoolean("PCM Sticky Fault Reset", false)) {
+      mainCompressor.clearAllPCMStickyFaults();
+    }
   }
 
   /**
@@ -119,7 +133,7 @@ public class Robot extends TimedRobot {
     switch (m_autoSelected) {
       case kDefaultAuto:
       default:
-        // Put default auto code here
+        teleopPeriodic();
         break;
     }
   }
@@ -129,7 +143,17 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    m_robotDrive.arcadeDrive(-m_stick.getY(), m_stick.getZ());
+    m_robotDrive.arcadeDrive(m_stick.getY(), m_stick.getZ());
+    if (elevatorUpButton.get()) elevatorMotor.set(0.75);
+    else if (elevatorDownButton.get()) elevatorMotor.set(-0.75);
+    else elevatorMotor.set(0);
+    if (armsEjectButton.get()) armsMotor.set(1);
+    else if (armsPullButton.get()) armsMotor.set(-1);
+    else armsMotor.set(0);
+    if (clawExtendButton.get()) clawPiston.set(Value.kForward);
+    else if (clawRetractButton.get()) clawPiston.set(Value.kReverse);
+    if (discGrabberExtendButton.get()) discPiston.set(Value.kForward);
+    else if (discGrabberRetractButton.get()) discPiston.set(Value.kReverse);
   }
 
   /**
