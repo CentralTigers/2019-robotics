@@ -107,7 +107,7 @@ public class Robot extends TimedRobot {
         break;
       case kDefaultAuto:
       default:
-      m_robotDrive.arcadeDrive(0, 0.50);
+      m_robotDrive.arcadeDrive(0, 0.25);
         break;
     }
   }

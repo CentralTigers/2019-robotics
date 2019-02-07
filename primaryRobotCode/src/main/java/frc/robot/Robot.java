@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -68,6 +69,8 @@ public class Robot extends TimedRobot {
   private final JoystickButton discGrabberExtendButton = new JoystickButton(m_stick, 10);
   // Initialize pressure sensor
   private final AnalogInput pressureSensor = new AnalogInput(0);
+  // Initialize power distribution panel
+  private final PowerDistributionPanel mainPDP = new PowerDistributionPanel(0);
   //private final DigitalInput testSwitch = new DigitalInput(0);
 
   /**
@@ -79,6 +82,8 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
     SmartDashboard.putBoolean("PCM Sticky Fault Reset", false);
+    SmartDashboard.putBoolean("PDP Sticky Fault Reset", false);
+    SmartDashboard.putBoolean("PDP Energy Reset", false);
   }
 
   /**
@@ -100,8 +105,21 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("PCM Compressor Over Current [Sticky]", mainCompressor.getCompressorCurrentTooHighStickyFault());
     SmartDashboard.putBoolean("PCM Compressor Not Connected [Sticky]", mainCompressor.getCompressorNotConnectedStickyFault());
     SmartDashboard.putBoolean("PCM Compressor Shorted [Sticky]", mainCompressor.getCompressorShortedStickyFault());
-    if (SmartDashboard.getBoolean("PCM Sticky Fault Reset", false)) {
+    SmartDashboard.putNumber("PDP Temperature (C)", mainPDP.getTemperature());
+    SmartDashboard.putNumber("PDP Current (A)", mainPDP.getTotalCurrent());
+    SmartDashboard.putNumber("PDP Energy Usage (J)", mainPDP.getTotalEnergy());
+    SmartDashboard.putNumber("PDP Power Usage (W)", mainPDP.getTotalPower());
+   if (SmartDashboard.getBoolean("PCM Sticky Fault Reset", false)) {
       mainCompressor.clearAllPCMStickyFaults();
+      SmartDashboard.putBoolean("PCM Sticky Fault Reset", false);
+    }
+   if (SmartDashboard.getBoolean("PDP Sticky Fault Reset", false)) {
+      mainPDP.clearStickyFaults();
+      SmartDashboard.putBoolean("PDP Sticky Fault Reset", false);
+    }
+    if (SmartDashboard.getBoolean("PDP Energy Reset", false)) {
+      mainPDP.resetTotalEnergy();
+      SmartDashboard.putBoolean("PDP Energy Reset", false);
     }
   }
 
@@ -144,14 +162,14 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     m_robotDrive.arcadeDrive(m_stick.getY(), m_stick.getZ());
-    if (elevatorUpButton.get()) elevatorMotor.set(0.75);
-    else if (elevatorDownButton.get()) elevatorMotor.set(-0.75);
+    if (elevatorUpButton.get()) elevatorMotor.set(1);
+    else if (elevatorDownButton.get()) elevatorMotor.set(-1);
     else elevatorMotor.set(0);
     if (armsEjectButton.get()) armsMotor.set(1);
     else if (armsPullButton.get()) armsMotor.set(-1);
     else armsMotor.set(0);
-    if (clawExtendButton.get()) clawPiston.set(Value.kForward);
-    else if (clawRetractButton.get()) clawPiston.set(Value.kReverse);
+    if (clawExtendButton.get()) clawPiston.set(Value.kReverse);
+    else if (clawRetractButton.get()) clawPiston.set(Value.kForward);
     if (discGrabberExtendButton.get()) discPiston.set(Value.kForward);
     else if (discGrabberRetractButton.get()) discPiston.set(Value.kReverse);
   }
