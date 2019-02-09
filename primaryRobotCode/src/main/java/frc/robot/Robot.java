@@ -59,14 +59,14 @@ public class Robot extends TimedRobot {
   private final DoubleSolenoid clawPiston = new DoubleSolenoid(0, 1);
   private final DoubleSolenoid discPiston = new DoubleSolenoid(2, 3); 
   // Initialize joystick buttons
-  private final JoystickButton elevatorUpButton = new JoystickButton(m_stick, 6);
-  private final JoystickButton elevatorDownButton = new JoystickButton(m_stick, 4);
+  //private final JoystickButton elevatorUpButton = new JoystickButton(m_stick, 6);
+  //private final JoystickButton elevatorDownButton = new JoystickButton(m_stick, 4);
   private final JoystickButton armsEjectButton = new JoystickButton(m_stick, 1);
   private final JoystickButton armsPullButton = new JoystickButton(m_stick, 2);
-  private final JoystickButton clawRetractButton = new JoystickButton(m_stick, 11);
-  private final JoystickButton clawExtendButton = new JoystickButton(m_stick, 12);
-  private final JoystickButton discGrabberRetractButton = new JoystickButton(m_stick, 9);
-  private final JoystickButton discGrabberExtendButton = new JoystickButton(m_stick, 10);
+  private final JoystickButton clawRetractButton = new JoystickButton(m_stick, 3);
+  private final JoystickButton clawExtendButton = new JoystickButton(m_stick, 5);
+  private final JoystickButton discGrabberRetractButton = new JoystickButton(m_stick, 6);
+  private final JoystickButton discGrabberExtendButton = new JoystickButton(m_stick, 4);
   // Initialize pressure sensor
   private final AnalogInput pressureSensor = new AnalogInput(0);
   // Initialize power distribution panel
@@ -161,9 +161,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    m_robotDrive.arcadeDrive(m_stick.getY(), m_stick.getZ());
-    if (elevatorUpButton.get()) elevatorMotor.set(1);
-    else if (elevatorDownButton.get()) elevatorMotor.set(-1);
+    m_robotDrive.arcadeDrive(m_stick.getY(), (m_stick.getThrottle() + 1) * m_stick.getZ());
+    if (m_stick.getPOV() == 0) elevatorMotor.set(1);
+    else if (m_stick.getPOV() == 180) elevatorMotor.set(-1);
     else elevatorMotor.set(0);
     if (armsEjectButton.get()) armsMotor.set(1);
     else if (armsPullButton.get()) armsMotor.set(-1);
