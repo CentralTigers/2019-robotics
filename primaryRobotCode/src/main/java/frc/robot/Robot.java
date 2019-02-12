@@ -84,6 +84,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("PCM Sticky Fault Reset", false);
     SmartDashboard.putBoolean("PDP Sticky Fault Reset", false);
     SmartDashboard.putBoolean("PDP Energy Reset", false);
+    SmartDashboard.putString("Claw Status", "Off");
+    SmartDashboard.putString("Disc Status", "Off");
   }
 
   /**
@@ -121,6 +123,13 @@ public class Robot extends TimedRobot {
       mainPDP.resetTotalEnergy();
       SmartDashboard.putBoolean("PDP Energy Reset", false);
     }
+    if (clawPiston.get().equals(Value.kForward)) SmartDashboard.putString("Claw Status", "Retracted");
+    else if (clawPiston.get().equals(Value.kReverse)) SmartDashboard.putString("Claw Status", "Extended");
+    else SmartDashboard.putString("Claw Status", "Off");
+
+    if (discPiston.get().equals(Value.kForward)) SmartDashboard.putString("Disc Status", "Retracted");
+    else if (discPiston.get().equals(Value.kReverse)) SmartDashboard.putString("Disc Status", "Extended");
+    else SmartDashboard.putString("Disc Status", "Off");
   }
 
   /**
