@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.cameraserver.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -75,6 +76,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("PDP Energy Reset", false);
     SmartDashboard.putString("Claw Status", "Off");
     SmartDashboard.putString("Disc Status", "Off");
+    CameraServer.getInstance().startAutomaticCapture("Bottom Camera", 0);
+    CameraServer.getInstance().startAutomaticCapture("Claw Camera", 1);
   }
 
   /**
