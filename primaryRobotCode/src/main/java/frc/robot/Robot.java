@@ -7,16 +7,11 @@
 
 package frc.robot;
 
-import edu.wpi.cscore.CvSink;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.*;
-import edu.wpi.first.wpilibj.shuffleboard.*;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -24,7 +19,6 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 /**
@@ -35,9 +29,6 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Manual Mode";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
   // Initialize motor controllers
   private final Spark armsMotor = new Spark(0);
   private final Spark rightBackMotor = new Spark(1);
@@ -79,8 +70,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
     SmartDashboard.putBoolean("PCM Sticky Fault Reset", false);
     SmartDashboard.putBoolean("PDP Sticky Fault Reset", false);
     SmartDashboard.putBoolean("PDP Energy Reset", false);
@@ -147,9 +136,6 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_timer.reset();
     m_timer.start();
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
   }
 
   /**
@@ -157,12 +143,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kDefaultAuto:
-      default:
-        teleopPeriodic();
-        break;
-    }
+      teleopPeriodic();
   }
 
   /**
