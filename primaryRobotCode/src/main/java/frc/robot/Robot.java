@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.Solenoid;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -36,6 +35,9 @@ import edu.wpi.first.wpilibj.Solenoid;
  * project.
  */
 public class Robot extends TimedRobot {
+  private static final String kDefaultAuto = "Manual Mode";
+  private String m_autoSelected;
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
   // Initialize motor controllers
   private final Spark armsMotor = new Spark(0);
   private final Spark rightBackMotor = new Spark(1);
@@ -55,8 +57,7 @@ public class Robot extends TimedRobot {
   // Initialize pneumatic components
   private final Compressor mainCompressor = new Compressor(0);
   private final DoubleSolenoid clawPiston = new DoubleSolenoid(0, 1);
-  //private final DoubleSolenoid discPiston = new DoubleSolenoid(2, 3);
-  private final Solenoid discSuction = new Solenoid(2);
+  private final DoubleSolenoid discPiston = new DoubleSolenoid(2, 3); 
   // Initialize joystick buttons
   //private final JoystickButton elevatorUpButton = new JoystickButton(m_stick, 6);
   //private final JoystickButton elevatorDownButton = new JoystickButton(m_stick, 4);
@@ -64,8 +65,8 @@ public class Robot extends TimedRobot {
   private final JoystickButton armsPullButton = new JoystickButton(m_stick, 2);
   private final JoystickButton clawRetractButton = new JoystickButton(m_stick, 3);
   private final JoystickButton clawExtendButton = new JoystickButton(m_stick, 5);
-  //private final JoystickButton discSuctionStopButton = new JoystickButton(m_stick, 6);
-  private final JoystickButton discSuctionStartButton = new JoystickButton(m_stick, 4);
+  private final JoystickButton discGrabberRetractButton = new JoystickButton(m_stick, 6);
+  private final JoystickButton discGrabberExtendButton = new JoystickButton(m_stick, 4);
   // Initialize pressure sensor
   private final AnalogInput pressureSensor = new AnalogInput(0);
   // Initialize power distribution panel
@@ -78,13 +79,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
+    SmartDashboard.putData("Auto choices", m_chooser);
     SmartDashboard.putBoolean("PCM Sticky Fault Reset", false);
     SmartDashboard.putBoolean("PDP Sticky Fault Reset", false);
     SmartDashboard.putBoolean("PDP Energy Reset", false);
-    SmartDashboard.putBoolean("Claw Status", false);
-    SmartDashboard.putBoolean("Disc Status", false);
-    CameraServer.getInstance().startAutomaticCapture("Bottom Camera", 0);
-    CameraServer.getInstance().startAutomaticCapture("Claw Camera", 1);
+    SmartDashboard.putString("Claw Status", "Off");
+    SmartDashboard.putString("Disc Status", "Off");
   }
 
   /**
@@ -122,15 +123,13 @@ public class Robot extends TimedRobot {
       mainPDP.resetTotalEnergy();
       SmartDashboard.putBoolean("PDP Energy Reset", false);
     }
-    if (clawPiston.get().equals(Value.kForward)) SmartDashboard.putBoolean("Claw Status", false);
-    else if (clawPiston.get().equals(Value.kReverse)) SmartDashboard.putBoolean("Claw Status", true);
-    else SmartDashboard.putBoolean("Claw Status", false);
+    if (clawPiston.get().equals(Value.kForward)) SmartDashboard.putString("Claw Status", "Retracted");
+    else if (clawPiston.get().equals(Value.kReverse)) SmartDashboard.putString("Claw Status", "Extended");
+    else SmartDashboard.putString("Claw Status", "Off");
 
-    //if (discPiston.get().equals(Value.kForward)) SmartDashboard.putBoolean("Disc Status", false);
-    //else if (discPiston.get().equals(Value.kReverse)) SmartDashboard.putBoolean("Disc Status", true);
-    //else SmartDashboard.putBoolean("Disc Status", false);
-
-    SmartDashboard.putBoolean("Disc Status", discSuction.get());
+    if (discPiston.get().equals(Value.kForward)) SmartDashboard.putString("Disc Status", "Retracted");
+    else if (discPiston.get().equals(Value.kReverse)) SmartDashboard.putString("Disc Status", "Extended");
+    else SmartDashboard.putString("Disc Status", "Off");
   }
 
   /**
@@ -148,6 +147,9 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_timer.reset();
     m_timer.start();
+    m_autoSelected = m_chooser.getSelected();
+    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    System.out.println("Auto selected: " + m_autoSelected);
   }
 
   /**
@@ -155,7 +157,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    teleopPeriodic();
+    switch (m_autoSelected) {
+      case kDefaultAuto:
+      default:
+        teleopPeriodic();
+        break;
+    }
   }
 
   /**
@@ -163,19 +170,17 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    m_robotDrive.arcadeDrive(m_stick.getY(), ((-m_stick.getThrottle() + 1) / 2.0)  * m_stick.getZ());
-    if (m_stick.getPOV() == 0 || m_stick.getPOV() == 45 || m_stick.getPOV() == 315) elevatorMotor.set(1);
-    else if (m_stick.getPOV() == 180 || m_stick.getPOV() == 135 || m_stick.getPOV() == 225) elevatorMotor.set(-1);
+    m_robotDrive.arcadeDrive(m_stick.getY(), (m_stick.getThrottle() + 1) * m_stick.getZ());
+    if (m_stick.getPOV() == 0) elevatorMotor.set(1);
+    else if (m_stick.getPOV() == 180) elevatorMotor.set(-1);
     else elevatorMotor.set(0);
     if (armsEjectButton.get()) armsMotor.set(1);
     else if (armsPullButton.get()) armsMotor.set(-1);
     else armsMotor.set(0);
     if (clawExtendButton.get()) clawPiston.set(Value.kReverse);
     else if (clawRetractButton.get()) clawPiston.set(Value.kForward);
-    if (discSuctionStartButton.get()) discSuction.set(true);
-    else discSuction.set(false);
-    //if (discGrabberExtendButton.get()) discPiston.set(Value.kForward);
-    //else if (discGrabberRetractButton.get()) discPiston.set(Value.kReverse);
+    if (discGrabberExtendButton.get()) discPiston.set(Value.kForward);
+    else if (discGrabberRetractButton.get()) discPiston.set(Value.kReverse);
   }
 
   /**
