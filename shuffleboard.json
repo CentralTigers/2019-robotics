@@ -1,0 +1,356 @@
+{
+  "tabPane": [
+    {
+      "title": "SmartDashboard",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "SmartDashboard/",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "tiles": {
+          "8,0": {
+            "size": [
+              4,
+              1
+            ],
+            "content": {
+              "_type": "Basic FMS Info",
+              "_source0": "network_table:///FMSInfo",
+              "_title": "Match Info"
+            }
+          },
+          "0,4": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "Pneumatics",
+              "Layout/Number of columns": 2,
+              "Layout/Number of rows": 2,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,1": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/PCM Fault",
+                  "_title": "PCM Fault",
+                  "Colors/Color when true": "#FF0000FF",
+                  "Colors/Color when false": "#008000FF"
+                },
+                "1,1": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/PCM Sticky Fault",
+                  "_title": "PCM Sticky Fault",
+                  "Colors/Color when true": "#FFFF00FF",
+                  "Colors/Color when false": "#008000FF"
+                },
+                "0,0": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/Compressor[0]/Enabled",
+                  "_title": "Compressor",
+                  "Colors/Color when true": "#00FF00FF",
+                  "Colors/Color when false": "#800000FF"
+                },
+                "1,0": {
+                  "_type": "Simple Dial",
+                  "_source0": "network_table:///SmartDashboard/Pressure Sensor",
+                  "_title": "Pressure Sensor",
+                  "Range/Min": 0.0,
+                  "Range/Max": 125.0,
+                  "Visuals/Show value": true
+                }
+              }
+            }
+          },
+          "8,1": {
+            "size": [
+              2,
+              3
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Claw Status",
+              "_title": "Claw Status",
+              "Colors/Color when true": "#0000FFFF",
+              "Colors/Color when false": "#FF0000FF"
+            }
+          },
+          "10,1": {
+            "size": [
+              2,
+              3
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/Disc Status",
+              "_title": "Disc Status",
+              "Colors/Color when true": "#0000FFFF",
+              "Colors/Color when false": "#FF0000FF"
+            }
+          },
+          "0,0": {
+            "size": [
+              4,
+              4
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://Claw Camera",
+              "_title": "Claw Camera",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": 0.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          },
+          "4,0": {
+            "size": [
+              4,
+              4
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://Bottom Camera",
+              "_title": "Bottom Camera",
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": 89.0,
+              "fps": -1,
+              "imageWidth": -1,
+              "imageHeight": -1
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Status Information",
+      "autoPopulate": false,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "tiles": {
+          "4,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///SmartDashboard/PCM Sticky Fault Reset",
+              "_title": "Sticky Fault Reset"
+            }
+          },
+          "0,4": {
+            "size": [
+              4,
+              2
+            ],
+            "content": {
+              "_type": "Simple Dial",
+              "_source0": "network_table:///SmartDashboard/Pressure Sensor",
+              "_title": "Pressure Sensor",
+              "Range/Min": 0.0,
+              "Range/Max": 120.0,
+              "Visuals/Show value": true
+            }
+          },
+          "0,0": {
+            "size": [
+              4,
+              4
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "PCM Status",
+              "Layout/Number of columns": 2,
+              "Layout/Number of rows": 5,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "1,1": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/PCM Compressor Not Connected [Sticky]",
+                  "_title": "Compressor Not Connected [Sticky]",
+                  "Colors/Color when true": "#FFFF00FF",
+                  "Colors/Color when false": "#008000FF"
+                },
+                "0,2": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/PCM Compressor Over Current",
+                  "_title": "Compressor Over Current",
+                  "Colors/Color when true": "#FF0000FF",
+                  "Colors/Color when false": "#008000FF"
+                },
+                "1,2": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/PCM Compressor Over Current [Sticky]",
+                  "_title": "Compressor Over Current [Sticky]",
+                  "Colors/Color when true": "#FFFF00FF",
+                  "Colors/Color when false": "#008000FF"
+                },
+                "0,3": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/PCM Compressor Shorted",
+                  "_title": "Compressor Shorted",
+                  "Colors/Color when true": "#FF0000FF",
+                  "Colors/Color when false": "#008000FF"
+                },
+                "1,3": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/PCM Compressor Shorted [Sticky]",
+                  "_title": "Compressor Shorted [Sticky]",
+                  "Colors/Color when true": "#FFFF00FF",
+                  "Colors/Color when false": "#008000FF"
+                },
+                "0,1": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/PCM Compressor Not Connected",
+                  "_title": "Compressor Not Connected",
+                  "Colors/Color when true": "#FF0000FF",
+                  "Colors/Color when false": "#008000FF"
+                },
+                "0,0": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/PCM Fault",
+                  "_title": "PCM Fault",
+                  "Colors/Color when true": "#FF0000FF",
+                  "Colors/Color when false": "#008000FF"
+                },
+                "1,0": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///SmartDashboard/PCM Sticky Fault",
+                  "_title": "PCM Sticky Fault",
+                  "Colors/Color when true": "#FFFF00FF",
+                  "Colors/Color when false": "#008000FF"
+                },
+                "0,4": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/Compressor[0]/Enabled",
+                  "_title": "Compressor",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                },
+                "1,4": {
+                  "_type": "Boolean Box",
+                  "_source0": "network_table:///LiveWindow/Ungrouped/Compressor[0]/Pressure switch",
+                  "_title": "Pressure Switch",
+                  "Colors/Color when true": "#7CFC00FF",
+                  "Colors/Color when false": "#8B0000FF"
+                }
+              }
+            }
+          },
+          "7,2": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///SmartDashboard/PDP Energy Reset",
+              "_title": "PDP Energy Reset"
+            }
+          },
+          "9,0": {
+            "size": [
+              3,
+              4
+            ],
+            "content": {
+              "_type": "Grid Layout",
+              "_title": "PDP Status",
+              "Layout/Number of columns": 3,
+              "Layout/Number of rows": 3,
+              "Layout/Label position": "BOTTOM",
+              "_children": {
+                "0,0": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/PDP Current (A)",
+                  "_title": "Current (A)"
+                },
+                "1,0": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/PDP Energy Usage (J)",
+                  "_title": "Energy Usage (J)"
+                },
+                "2,0": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/PDP Power Usage (W)",
+                  "_title": "Power Usage (W)"
+                },
+                "0,1": {
+                  "_type": "Text View",
+                  "_source0": "network_table:///SmartDashboard/PDP Temperature (C)",
+                  "_title": "Temperature (C)"
+                }
+              }
+            }
+          },
+          "7,3": {
+            "size": [
+              2,
+              1
+            ],
+            "content": {
+              "_type": "Toggle Button",
+              "_source0": "network_table:///SmartDashboard/PDP Sticky Fault Reset",
+              "_title": "PDP Sticky Fault Reset"
+            }
+          },
+          "4,4": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Claw Status",
+              "_title": "Claw Status"
+            }
+          },
+          "4,5": {
+            "size": [
+              1,
+              1
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Disc Status",
+              "_title": "Disc Status"
+            }
+          }
+        }
+      }
+    },
+    {
+      "title": "Other",
+      "autoPopulate": true,
+      "autoPopulatePrefix": "",
+      "widgetPane": {
+        "gridSize": 128.0,
+        "showGrid": true,
+        "hgap": 16.0,
+        "vgap": 16.0,
+        "tiles": {}
+      }
+    }
+  ],
+  "windowGeometry": {
+    "x": -8.0,
+    "y": -8.0,
+    "width": 1936.0,
+    "height": 1056.0
+  }
+}
